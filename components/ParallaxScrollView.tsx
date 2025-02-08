@@ -10,6 +10,7 @@ import Animated, {
 import { ThemedView } from '@/components/ThemedView';
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemedText } from '@/components/ThemedText';
 
 const HEADER_HEIGHT = 250;
 
@@ -22,7 +23,8 @@ export default function ParallaxScrollView({
   children,
   headerImage,
   headerBackgroundColor,
-}: Props) {
+  stickyHeader,
+}: Props & { stickyHeader?: ReactElement }) {
   const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -50,7 +52,9 @@ export default function ParallaxScrollView({
         ref={scrollRef}
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ bottom }}
-        contentContainerStyle={{ paddingBottom: bottom }}>
+        contentContainerStyle={{ paddingBottom: bottom }}
+        stickyHeaderIndices={stickyHeader ? [1] : undefined} // 🔥 Rende sticky l'header di ricerca
+      >
         <Animated.View
           style={[
             styles.header,
@@ -58,7 +62,10 @@ export default function ParallaxScrollView({
             headerAnimatedStyle,
           ]}>
           {headerImage}
+          <ThemedText style={styles.textContainer} type="subtitle">Loro l'hanno usato, Noi annusiamo l'affare</ThemedText>
         </Animated.View>
+        
+        {stickyHeader && <ThemedView style={styles.stickyHeader}  lightColor="transparent" darkColor="transparent">{stickyHeader}</ThemedView>}
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
@@ -70,6 +77,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     height: HEADER_HEIGHT,
     overflow: 'hidden',
   },
@@ -78,5 +88,21 @@ const styles = StyleSheet.create({
     padding: 32,
     gap: 16,
     overflow: 'hidden',
+  },
+  stickyHeader: { // 🔥 Stile per mantenere il componente sticky
+    backgroundColor: "#ffffff0",
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    zIndex: 10,
+
+    elevation: 5, // Effetto ombra su Android
+    shadowColor: "#000", // Effetto ombra su iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  textContainer: {
+    transform: [{ translateY: -30 }],
+    textAlign: 'center',
   },
 });
