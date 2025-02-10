@@ -149,8 +149,8 @@ export default function HomeScreen() {
           //   </LinearGradient>
           //   ))}
           // </ScrollView>
-          <CardList data={data} logoMap={logoMap} />
-      )}
+        <CardList data={data} logoMap={logoMap} />
+        )}
 
     </ParallaxScrollView>
   );

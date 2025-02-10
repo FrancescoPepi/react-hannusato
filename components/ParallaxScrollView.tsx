@@ -1,5 +1,5 @@
 import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, FlatList, View } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -11,6 +11,9 @@ import { ThemedView } from '@/components/ThemedView';
 import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { ThemedText } from '@/components/ThemedText';
+import React from 'react';
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const HEADER_HEIGHT = 250;
 
@@ -30,45 +33,68 @@ export default function ParallaxScrollView({
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
   const headerAnimatedStyle = useAnimatedStyle(() => {
+    const translateY = interpolate(
+      scrollOffset.value || 0,  // ✅ Evita undefined
+      [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+      [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
+    );
+  
+    const scale = interpolate(
+      scrollOffset.value || 0,  // ✅ Evita undefined
+      [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+      [2, 1, 1]
+    );
+  
     return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
-            [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
-          ),
-        },
-        {
-          scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
-        },
-      ],
+      transform: [{ translateY }, { scale }],
     };
   });
 
   return (
     <ThemedView style={styles.container}>
-      <Animated.ScrollView
-        ref={scrollRef}
-        scrollEventThrottle={16}
-        scrollIndicatorInsets={{ bottom }}
-        contentContainerStyle={{ paddingBottom: bottom }}
-        stickyHeaderIndices={stickyHeader ? [1] : undefined} // 🔥 Rende sticky l'header di ricerca
-      >
+  <AnimatedFlatList
+      ref={scrollRef}
+      // scrollEventThrottle={16}
+      // scrollIndicatorInsets={{ bottom }}
+      // contentContainerStyle={{ paddingBottom: bottom }}
+        // stickyHeaderIndices={stickyHeader ? [0] : undefined} // 🔥 Assicura che la barra rimanga sticky
+        // stickyHeaderIndices={[0]}
+    data={React.Children.toArray(children)}
+    renderItem={({ item }) => <>{item}</>}
+    ListHeaderComponent={() => (
+      <View>
         <Animated.View
           style={[
             styles.header,
             { backgroundColor: headerBackgroundColor[colorScheme] },
             headerAnimatedStyle,
-          ]}>
+          ]}
+        >
           {headerImage}
-          <ThemedText style={styles.textContainer} type="subtitle">Loro l'hanno usato, Noi annusiamo l'affare</ThemedText>
+          <ThemedText style={styles.textContainer} type="subtitle">
+            Loro l'hanno usato, Noi annusiamo l'affare
+          </ThemedText>
         </Animated.View>
-        
-        {stickyHeader && <ThemedView style={styles.stickyHeader}  lightColor="transparent" darkColor="transparent">{stickyHeader}</ThemedView>}
-        <ThemedView style={styles.content}>{children}</ThemedView>
-      </Animated.ScrollView>
-    </ThemedView>
+    
+        {stickyHeader && (
+          <ThemedView
+            style={[styles.stickyHeader, { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }]} // 🔥 Fissa la barra
+            lightColor="transparent"
+            darkColor="transparent"
+          >
+            {typeof stickyHeader === "string" ? (
+              <ThemedText>{stickyHeader}</ThemedText>
+            ) : (
+              stickyHeader
+            )}
+          </ThemedView>
+        )}
+      </View>
+    )}
+    
+  />
+</ThemedView>
+
   );
 }
 

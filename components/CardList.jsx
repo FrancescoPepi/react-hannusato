@@ -1,6 +1,6 @@
 // import React from 'react';
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Image, TouchableOpacity, Linking } from 'react-native';
+import { ScrollView, StyleSheet, View, Image, TouchableOpacity, Linking, FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 // import Animated, { useAnimatedScrollHandler, FadeIn, FadeOut, useSharedValue, useAnimatedStyle, interpolate, withTiming} from 'react-native-reanimated';
 import Animated from 'react-native-reanimated';
@@ -10,32 +10,60 @@ const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 const CardList = ({ data, logoMap }) => {
     return (
-    <ScrollView
-      style={{ padding: 5 }}
-    >          
-    {data.map((item, index) => {
-          return (
-            <LinearGradient key={index} colors={['#242728', '#2d2f30']} style={[styles.card, styles.cardContainer]}>
-              <TouchableOpacity onPress={() => Linking.openURL(item.link)}>
-              <View style={styles.cardContent}>
-                  <Image
-                    source={item.picture ? { uri: item.picture } : require('@/assets/images/logo.png')}
-                    resizeMode="cover"
-                    style={styles.image}
-                  />
-                  <View style={styles.infoContainer}>
-                    <View style={[styles.badge]}>
-                      <ThemedText type="default" style={styles.stylePrice}>€ {item.price}</ThemedText>
-                    </View>
-                    <Image source={logoMap[item.source.toLowerCase()]} resizeMode="contain" style={styles.badge} />
-                  </View>
+    // <ScrollView
+    //   style={{ padding: 5 }}
+    // >          
+    // {data.map((item, index) => {
+    //       return (
+    //         <LinearGradient key={index} colors={['#242728', '#2d2f30']} style={[styles.card, styles.cardContainer]}>
+    //           <TouchableOpacity onPress={() => Linking.openURL(item.link)}>
+    //           <View style={styles.cardContent}>
+    //               <Image
+    //                 source={item.picture ? { uri: item.picture } : require('@/assets/images/logo.png')}
+    //                 resizeMode="cover"
+    //                 style={styles.image}
+    //               />
+    //               <View style={styles.infoContainer}>
+    //                 <View style={[styles.badge]}>
+    //                   <ThemedText type="default" style={styles.stylePrice}>€ {item.price}</ThemedText>
+    //                 </View>
+    //                 <Image source={logoMap[item.source.toLowerCase()]} resizeMode="contain" style={styles.badge} />
+    //               </View>
+    //             </View>
+    //             <ThemedText type="defaultSemiBold" style={styles.subCard}>{item.title}</ThemedText>
+    //           </TouchableOpacity>
+    //         </LinearGradient>
+    //       );
+    //   })}
+    // </ScrollView>
+      <View style={{ padding: 5, flex:1 }}>
+         <FlatList
+      data={data} // 🔥 Passa i dati correttamente
+          keyExtractor={(item,index) => `${item.title}-${index}`} // ⚠️ Meglio usare un id se disponibile
+          
+      renderItem={({ item }) => (
+        <LinearGradient colors={['#242728', '#2d2f30']} style={[styles.card, styles.cardContent]}>
+          <TouchableOpacity onPress={() => Linking.openURL(item.link)}>
+            <View style={styles.cardContent}>
+              <Image
+                source={item.picture ? { uri: item.picture } : require('@/assets/images/logo.png')}
+                resizeMode="cover"
+                style={styles.image}
+              />
+              <View style={styles.infoContainer}>
+                <View style={[styles.badge]}>
+                  <ThemedText type="default" style={styles.stylePrice}>€ {item.price}</ThemedText>
                 </View>
-                <ThemedText type="defaultSemiBold" style={styles.subCard}>{item.title}</ThemedText>
-              </TouchableOpacity>
-            </LinearGradient>
-          );
-      })}
-    </ScrollView>
+                <Image source={logoMap[item.source.toLowerCase()]} resizeMode="contain" style={styles.badge} />
+              </View>
+            </View>
+            <ThemedText type="defaultSemiBold" style={styles.subCard}>{item.title}</ThemedText>
+          </TouchableOpacity>
+        </LinearGradient>
+      )}
+      contentContainerStyle={{ padding: 5 }} // 🔥 Opzionale per padding generale
+    />
+    </View>
   );
 };
 const styles = StyleSheet.create({
