@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
+    gap: 8,
   },
   textContainer: {
     backgroundColor: '#56a06f5f',

@@ -62,7 +62,7 @@ export default function ParallaxScrollView({
             headerAnimatedStyle,
           ]}>
           {headerImage}
-          <ThemedText style={styles.textContainer} type="subtitle">Loro l'hanno usato, Noi annusiamo l'affare</ThemedText>
+          <ThemedText style={styles.textContainer} type="subtitle">Loro l'hanno usato, noi annusiamo l'affare</ThemedText>
         </Animated.View>
         
         {stickyHeader && <ThemedView style={styles.stickyHeader}  lightColor="transparent" darkColor="transparent">{stickyHeader}</ThemedView>}

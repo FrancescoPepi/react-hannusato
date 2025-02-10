@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logoMini.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.hannusatoapp.demoreact"
     },
     "web": {
       "bundler": "metro",
@@ -36,6 +37,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "83495cc4-9371-45dd-a03a-b2200ffe5772"
+      }
     }
   }
 }
