@@ -1,3 +1,4 @@
+import React from 'react';
 import type { PropsWithChildren, ReactElement } from 'react';
 import { StyleSheet } from 'react-native';
 import Animated, {
@@ -5,6 +6,8 @@ import Animated, {
   useAnimatedRef,
   useAnimatedStyle,
   useScrollViewOffset,
+  useSharedValue,
+  withTiming
 } from 'react-native-reanimated';
 
 import { ThemedView } from '@/components/ThemedView';
@@ -17,6 +20,8 @@ const HEADER_HEIGHT = 250;
 type Props = PropsWithChildren<{
   headerImage: ReactElement;
   headerBackgroundColor: { dark: string; light: string };
+  isLoading: boolean;
+  loading: boolean;
 }>;
 
 export default function ParallaxScrollView({
@@ -24,11 +29,14 @@ export default function ParallaxScrollView({
   headerImage,
   headerBackgroundColor,
   stickyHeader,
+  isLoading,
+  loading,
 }: Props & { stickyHeader?: ReactElement }) {
   const colorScheme = useColorScheme() ?? 'light';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const bottom = useBottomTabOverflow();
+  // const searchBarPosition = useSharedValue(0);
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -45,6 +53,26 @@ export default function ParallaxScrollView({
       ],
     };
   });
+  // Funzione per aggiornare la posizione quando cambia loading/isLoading
+// React.useEffect(() => {
+//   if (!isLoading) {
+//     searchBarPosition.value = withTiming(0, { duration: 300 }); // Sposta in basso
+//     // console.log(searchBarPosition);
+//   } else if (!isLoading && loading ) {
+//     searchBarPosition.value = withTiming(- HEADER_HEIGHT, { duration: 300 }); // Sposta in basso
+//     // console.log(searchBarPosition);
+//   } else {
+//     searchBarPosition.value = withTiming(0, { duration: 300 }); // Rimane in alto
+//     console.log(searchBarPosition);
+//     // console.log(withTiming(HEADER_HEIGHT));
+//   }
+// }, [isLoading,loading]);
+
+// const searchBarAnimatedStyle = useAnimatedStyle(() => {
+//   return {
+//     transform: [{ translateY: searchBarPosition.value }],
+//   };
+// });
 
   return (
     <ThemedView style={styles.container}>
@@ -53,7 +81,7 @@ export default function ParallaxScrollView({
         scrollEventThrottle={16}
         scrollIndicatorInsets={{ bottom }}
         contentContainerStyle={{ paddingBottom: bottom }}
-        stickyHeaderIndices={stickyHeader ? [1] : undefined} // 🔥 Rende sticky l'header di ricerca
+        // stickyHeaderIndices={stickyHeader ? [1] : undefined} // 🔥 Rende sticky l'header di ricerca
       >
         <Animated.View
           style={[
@@ -65,7 +93,15 @@ export default function ParallaxScrollView({
           <ThemedText style={styles.textContainer} type="subtitle">Loro l'hanno usato, noi annusiamo l'affare</ThemedText>
         </Animated.View>
         
-        {stickyHeader && <ThemedView style={styles.stickyHeader}  lightColor="transparent" darkColor="transparent">{stickyHeader}</ThemedView>}
+        {stickyHeader && loading && <ThemedView style={styles.stickyHeader} lightColor="transparent" darkColor="transparent">
+            {stickyHeader}
+        </ThemedView>}
+
+          {/* {stickyHeader && (
+            <Animated.View style={[styles.stickyHeader, searchBarAnimatedStyle]}>
+              {stickyHeader}
+            </Animated.View> */}
+          {/* )} */}
         <ThemedView style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>

@@ -2,6 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Linking, View, ActivityIndicator, Button, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming
+} from 'react-native-reanimated';
+const HEADER_HEIGHT = 250;
 
 import { HelloWave } from '@/components/HelloWave';
 import SearchBarComponent from '@/components/SearchBar';
@@ -12,13 +18,14 @@ import { SearchBar } from 'react-native-screens';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 // import Animated, { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-console.log("AnimatedPhrase:", AnimatedPhrase);
+// console.log("AnimatedPhrase:", AnimatedPhrase);
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
+  // const searchBarPosition = useSharedValue(0);
 
   const handlePress = () => {
     width.value = withSpring(width.value + 50);
@@ -32,7 +39,8 @@ export default function HomeScreen() {
 
   let test = 'red';
 
-   const fetchData = async (term) => {
+  const fetchData = async (term) => {
+    //  console.log("isLoading,loading",isLoading,loading)
     if (!term) return; // Evita chiamate API se il termine è vuoto
     setLoading(true);
     try {
@@ -86,8 +94,27 @@ export default function HomeScreen() {
     }
   };
 
+// ANIMAZIONE SPOSTA SEARCH BAR
+  // React.useEffect(() => {
+    // if (isLoading) {
+    //   searchBarPosition.value = withTiming(-HEADER_HEIGHT, { duration: 300 }); // Sposta in basso
+    //   console.log(searchBarPosition);
+    // }
+    // else {
+    //   searchBarPosition.value = withTiming(0, { duration: 300 }); // Rimane in alto
+    //   console.log(searchBarPosition);
+    //   // console.log(withTiming(HEADER_HEIGHT));
+    // }
+  // }, [isLoading]);
+
+  // const searchBarAnimatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [{ translateY: searchBarPosition.value }],
+  //   };
+  // });
 
   return (
+    <>
     <ParallaxScrollView
     headerBackgroundColor={{ light: '#56a06f', dark: '#56a06f' }}
       headerImage={
@@ -103,56 +130,46 @@ export default function HomeScreen() {
           onSearch={fetchData}
         />
       }
+        isLoading={isLoading}
+        loading={loading}
     >
       
       {isLoading ? <ActivityIndicator size="large" color="#56a06f" /> : null}
       
-      {loading ? (
-        <View style={styles.boxContainer}>
-          <ThemedView style={[styles.titleContainer]}>
-            <ThemedText type="title">Welcome Back</ThemedText>
-            <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <ThemedText type="defaultSemiBold">Project Hannusato</ThemedText>
-              <HelloWave />
+        {loading ? (
+          <View style={styles.boxContainer}>
+            <ThemedView style={[styles.titleContainer]}>
+              <ThemedText type="title">Welcome Back</ThemedText>
+              <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <ThemedText type="defaultSemiBold">Project Hannusato</ThemedText>
+                <HelloWave />
+              </ThemedView>
             </ThemedView>
-          </ThemedView>
-          <AnimatedPhrase />
-        </View>
+            <AnimatedPhrase />
+          </View>
+        
+        ) : (null)}
+
+      </ParallaxScrollView>
+      {loading ? (
+      null
         
       ) : (
-          // <ScrollView style={{padding: 5}}>
-          //   {data.map((item, index) => (
-          //         <LinearGradient
-          //         colors={['#242728', '#2d2f30']}
-          //         style={styles.card} key={index}>
-          //     <TouchableOpacity onPress={() => Linking.openURL(item.link)} key={index}>
-          //       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-          //         <Image
-          //           source={item.picture ? { uri: item.picture } : require('@/assets/images/logo.png')}
-          //           resizeMode="cover"
-          //           style={styles.image}
-          //         />
-          //         <View style={{ flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'space-between', gap: 20 }}>
-          //           <View style={[styles.badge]}>
-          //             <ThemedText type="default" style={[styles.stylePrice, {color:test}]}>€ {item.price}</ThemedText>
-          //           </View>
-          //           <Image
-          //             source={logoMap[item.source.toLowerCase()]}
-          //               resizeMode="contain"
-          //             style={[styles.badge]}
-          //           />
-
-          //         </View>
-          //       </View>
-          //       <ThemedText type="defaultSemiBold" style={styles.subCard}>{item.title}</ThemedText>
-          //     </TouchableOpacity>
-          //   </LinearGradient>
-          //   ))}
-          // </ScrollView>
-          <CardList data={data} logoMap={logoMap} />
+          <ThemedView>                          
+            <ThemedView type="title" 
+              style={styles.stickyHeader}
+              lightColor="transparent" darkColor="transparent"
+              >
+              <SearchBarComponent
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                onSearch={fetchData}
+                />
+            </ThemedView>
+              <CardList data={data} logoMap={logoMap} />
+          </ThemedView>
       )}
-
-    </ParallaxScrollView>
+</>
   );
 }
 
@@ -162,6 +179,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+  },
+  stickyHeader: { // 🔥 Stile per mantenere il componente sticky
+    display: 'flex',
+    flex: 1,
+    position: "absolute",
+    // display: "fixed",
+    top: 10,
+    left: 0,
+    right: 0,
+    zIndex:10,
+    // backgroundColor: "transparent",
+    // backgroundColor: "#ffffff0",
+    paddingTop: 50,
+    paddingHorizontal: 20,
+    // height: 50,
+
+    elevation: 5, // Effetto ombra su Android
+    shadowColor: "#000", // Effetto ombra su iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   textContainer: {
     backgroundColor: '#56a06f5f',
