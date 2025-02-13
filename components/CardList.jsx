@@ -68,7 +68,7 @@ const getPriceColor = (price) => {
       data={data}
       onScroll={Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNavitiveDriver: true }
+        { useNativeDriver: true }
       )}
       keyExtractor={(item, index) => index.toString()}
       contentContainerStyle={{
