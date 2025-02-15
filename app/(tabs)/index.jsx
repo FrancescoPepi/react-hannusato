@@ -14,6 +14,7 @@ import SearchBarComponent from '@/components/SearchBar';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import AnimatedPhrase  from '@/components/AnimatedPhrase';
 import CardList  from '@/components/CardList';
+import FlashListCustom  from '@/components/FlashListCustom';
 import { SearchBar } from 'react-native-screens';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -166,7 +167,8 @@ export default function HomeScreen() {
                 onSearch={fetchData}
                 />
             </ThemedView>
-              <CardList data={data} logoMap={logoMap} />
+              <FlashListCustom data={data} logoMap={logoMap} />
+              {/* <CardList data={data} logoMap={logoMap} /> */}
           </ThemedView>
       )}
 </>
