@@ -167,7 +167,7 @@ export default function HomeScreen() {
                 onSearch={fetchData}
                 />
             </ThemedView>
-              <FlashListCustom data={data} logoMap={logoMap} />
+              <FlashListCustom data={data} logoMap={logoMap} searchQuery={searchQuery}  />
               {/* <CardList data={data} logoMap={logoMap} /> */}
           </ThemedView>
       )}
