@@ -1,11 +1,12 @@
 // import React from 'react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Text, RefreshControl , Platform, StatusBar, Dimensions, ScrollView, StyleSheet, View, Image, TouchableOpacity, useAnimatedValue , Linking, Switch  } from 'react-native';
+import { Text, RefreshControl , Platform, StatusBar, Dimensions, ScrollView, StyleSheet, View, PixelRatio, Image, TouchableOpacity, useAnimatedValue , Linking, Switch  } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import FloatingActionButton from '@/components/FloatingActionButton';
 import { Ionicons } from '@expo/vector-icons';
 import CardCustom  from '@/components/CardCustom';
 import CardCustomV2  from '@/components/CardCustomV2';
+import SearchBarComponent from '@/components/SearchBar';
 // import Animated, { useAnimatedScrollHandler, FadeIn, FadeOut, useSharedValue, useAnimatedStyle, interpolate, withTiming} from 'react-native-reanimated';
 // import * as AnimatedCustom from 'react-native-reanimated';
 import Animated, { useSharedValue , useAnimatedStyle, withTiming } from 'react-native-reanimated';
@@ -20,11 +21,16 @@ const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight || 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 const { width, height } = Dimensions.get('screen');
 // console.log("height",height)
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const scale = SCREEN_WIDTH / 375;
 
+export function normalize(size) {
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+}
 
-const FlashListCustom = ({ data, logoMap, searchQuery }) => {
-  const searchQuery2 = searchQuery || null;
-  // console.log("searchQuery",searchQuery)
+const FlashListCustom = ({ data, logoMap, searchQuery, setSearchQuery, onSearch }) => {
+  const searchQuery2 = (searchQuery.length > 0 && searchQuery) ;
   // console.log("searchQuery2",searchQuery2)
   const [refreshing, setRefreshing] = useState(false);
   const flashListRef = useRef(null);
@@ -98,10 +104,10 @@ const FlashListCustom = ({ data, logoMap, searchQuery }) => {
   
   return (
     <LinearGradient colors={['#56a06f', '#002f06']}>
-      <View style={[{ minHeight: 2, width: width, height: height, padding: 7}]}>
+      <View style={[{ minHeight: 2, width: width, height: height}]}>
       {/* Indice della cella visibile */}
       <TouchableOpacity 
-        style={styles.touchableUp} 
+        style={[styles.touchableUp, styles.shadow]} 
         onPress={scrollToPosition}
       >
         <ThemedText style={{ color: "white", fontWeight: "bold", padding: 8, aspectRatio: 1 / 1, textAlign: "center" }}>
@@ -110,22 +116,31 @@ const FlashListCustom = ({ data, logoMap, searchQuery }) => {
       </TouchableOpacity>
 
      {/* 🌍 Filtri per fonte (Subito, Vinted, ecc.) */}
-      <View className='z-20' style={styles.filterButtons}>
-          <FloatingActionButton
-            logoMap={logoMap} 
-            selectedSources={selectedSources} 
-            onFilterChange={setSelectedSources}
-            titleFilterActive={isTitleFilterActive}
-            onTitleFilterToggle={setIsTitleFilterActive}
-          />
+        <View className='z-20 w-full flex-row items-center px-1 gap-2' style={[styles.stickyHeader,{height:50, top: Platform.OS === 'ios' ? 45 : 35,}]}>
+          <View className='flex-1'>
+            <SearchBarComponent
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onSearch={onSearch}
+            />
+          </View>
+          <View>
+            <FloatingActionButton
+              logoMap={logoMap} 
+              selectedSources={selectedSources} 
+              onFilterChange={setSelectedSources}
+              titleFilterActive={isTitleFilterActive}
+              onTitleFilterToggle={setIsTitleFilterActive}
+            />
+          </View>
        {/* 🔍 Switch per attivare/disattivare il filtro per titolo */}
-      <View style={styles.switchContainer}>
+      {/* <View style={styles.switchContainer}> */}
         {/* <ThemedText>Filtra per titolo</ThemedText>
           <Switch style={{flex: 1, margin:"auto"}}
           value={isTitleFilterActive}
           onValueChange={setIsTitleFilterActive}
         /> */}
-      </View>
+      {/* </View> */}
         {/* {['SUBITO', 'VESTIAIRE', 'EBAY'].map(source => (
           <TouchableOpacity
             key={source}
@@ -166,7 +181,7 @@ const FlashListCustom = ({ data, logoMap, searchQuery }) => {
         contentContainerStyle={{
           padding: 10,
           paddingTop: STATUSBAR_HEIGHT + 70,
-          paddingBottom: STATUSBAR_HEIGHT +60,
+          paddingBottom: STATUSBAR_HEIGHT +65,
         }}
         refreshControl={
           <RefreshControl 
@@ -199,20 +214,21 @@ const FlashListCustom = ({ data, logoMap, searchQuery }) => {
 const styles = StyleSheet.create({
   shadow: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 10 },
     shadowOpacity: .2,
-    shadowRadius: 2,
-    elevation: 5,
+    shadowRadius: 10,
+    elevation: 2,
   },
     touchableUp: {
       position: "absolute",
-      bottom: 100,
+      bottom: 30,
       right: 10,
       backgroundColor: "#56a06f",
       padding: 10,
       borderRadius: 40,
       zIndex: 10,
-      aspectRatio: 1 / 1,    
+      aspectRatio: 1 / 1,
+      opacity: 0.9
   },
   button: {
     marginTop:"auto",
@@ -252,6 +268,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     // marginBottom: 10,
+  },
+  stickyHeader: { // 🔥 Stile per mantenere il componente sticky
+    display: 'flex',
+    flex: 1,
+    position: "absolute",
+
+    elevation: 5, // Effetto ombra su Android
+    shadowColor: "#000", // Effetto ombra su iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 });
 export default FlashListCustom;

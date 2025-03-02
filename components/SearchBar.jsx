@@ -27,7 +27,13 @@ const SearchBarComponent = ({ searchQuery, setSearchQuery, onSearch }) => {
         onChangeText={setSearchQuery}
         value={searchQuery}
         onSubmitEditing={() => onSearch(searchQuery)}
-        onFocus={handleFocus}
+      onFocus={handleFocus}
+      style={{
+        shadowColor: '#000000',
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 2 }}
         icon={() => (
           <Animated.View style={animatedStyle}>
             <Image

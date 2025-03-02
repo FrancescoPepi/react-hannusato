@@ -8,7 +8,7 @@ const CardCustom = ({ item, logoMap, index, getPriceColor }) => {
 
 
     return (        
-        <TouchableOpacity key={index} onPress={() => item.link && Linking.openURL(item.link)}>
+        <TouchableOpacity key={index} onPress={() => item.link && Linking.openURL(item.link)} style={{ marginHorizontal: 4 }}>
             <View className='p-1 w-full h-[220px] rounded-xl overflow-hidden bg-bgCard mt-5 flex-row'>
                 {/* CONTAINER */}
                 {/* BOX-1 IMG */}

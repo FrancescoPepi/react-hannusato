@@ -16,6 +16,6 @@
     "app/(tabs)/index.jsx",
     "components/AnimatedPhrase.jsx",
     "components/CardList.jsx",
-    "nativewind-env.d.ts",
+    "nativewind-env.d.ts", "components/TabBar.jsx",
   ]
 }

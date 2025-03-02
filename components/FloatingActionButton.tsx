@@ -135,13 +135,27 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
               handleOptionPress(index);
             }}
           >
-            <Text className='text-xs font-semibold' style={{color:'#fff'}}>{textButton[index]}</Text>
+            <Text className='text-xs font-semibold' style={{
+              color:
+                index === 1 
+                  ? (check ? "#fff" : "#494949") 
+                  : index === 0 
+                    ? (open ? "#fff" : "#494949") 
+                    : "#494949"
+              
+            }}>{textButton[index]}</Text>
             <Ionicons 
               name={ index === 1 
                 ? (check ? "checkbox" : "square-outline") 
                 : iconName }  
               size={25} 
-              color="white" 
+              color={
+                index === 1 
+                  ? (check ? "#fff" : "#494949") 
+                  : index === 0 
+                    ? (open ? "#fff" : "#494949") 
+                    : "#494949"
+              }
             />
           </TouchableOpacity>
         </Animated.View>
@@ -168,7 +182,7 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
       {/* FAB principale */}
       <TouchableOpacity style={styles.fab} onPress={toggleMenu}>
         <Animated.View style={fabAnimatedStyle}>
-          <Ionicons name="add" size={24} color="white" />
+          <Ionicons name="add" size={24} color="#494949" />
         </Animated.View>
       </TouchableOpacity>
     </View>
@@ -177,16 +191,16 @@ const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: 10,
-    right: 10,
-    alignItems: 'center',
+    // position: 'absolute',
+    // bottom: 10,
+    // right: 10,
+    // alignItems: 'center',
   },
   fab: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ededed',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -198,7 +212,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#909090',
+    backgroundColor: '#ededed',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 10,

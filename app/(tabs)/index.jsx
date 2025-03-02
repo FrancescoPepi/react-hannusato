@@ -50,6 +50,7 @@ export default function HomeScreen() {
     const baseUrlTest = Platform.OS === 'ios' 
     ? 'http://192.168.1.60:5000'  // iOS usa 'localhost'
       : 'http://10.0.2.2:5000';
+      // : 'http://192.168.1.60:5000';
     
     if (!term) return; // Evita chiamate API se il termine è vuoto
     setLoading(true);
@@ -148,18 +149,14 @@ export default function HomeScreen() {
       null
         
       ) : (
-          <Animated.View entering={CustomFadeInUp} exiting={CustomFadeOutUp}>                          
-            <View  className='top-5 left-0 z-10'
-              style={[styles.stickyHeader, {marginTop: normalize(Platform.OS === 'ios'? 45 : 35),right: normalize(Platform.OS === 'ios'?77:70) , paddingLeft: normalize(10)}]}
-              // lightColor="transparent" darkColor="transparent"
-              >
-              <SearchBarComponent
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                onSearch={fetchData}
-              />
-            </View>
-              <FlashListCustom2 data={data} logoMap={logoMap} searchQuery={searchQuery}  />
+          <Animated.View entering={CustomFadeInUp} exiting={CustomFadeOutUp}>
+            <FlashListCustom2
+              data={data}
+              logoMap={logoMap}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              onSearch={fetchData}
+            />
               {/* <FlashListCustom data={data} logoMap={logoMap} searchQuery={searchQuery}  /> */}
           </Animated.View>
       )}
