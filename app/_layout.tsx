@@ -45,6 +45,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { View, Image, StyleSheet } from 'react-native';
 import  Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import "../global.css"
 
 // Impedisce che la splash screen si chiuda automaticamente
 // SplashScreen.preventAutoHideAsync();

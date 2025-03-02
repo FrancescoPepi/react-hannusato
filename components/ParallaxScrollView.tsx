@@ -75,7 +75,7 @@ export default function ParallaxScrollView({
 // });
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView lightColor='#002f06' darkColor='#002f06' style={styles.container}>
       <Animated.ScrollView
         ref={scrollRef}
         scrollEventThrottle={16}
@@ -102,7 +102,7 @@ export default function ParallaxScrollView({
               {stickyHeader}
             </Animated.View> */}
           {/* )} */}
-        <ThemedView style={styles.content}>{children}</ThemedView>
+        <ThemedView lightColor='transparent' darkColor='transparent' style={styles.content}>{children}</ThemedView>
       </Animated.ScrollView>
     </ThemedView>
   );
@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: HEADER_HEIGHT,
     overflow: 'hidden',
+    // backgroundColor: '#005c71',
   },
   content: {
     flex: 1,
@@ -140,5 +141,6 @@ const styles = StyleSheet.create({
   textContainer: {
     transform: [{ translateY: -30 }],
     textAlign: 'center',
+    color:'#fff'
   },
 });

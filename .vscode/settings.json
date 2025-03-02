@@ -1,0 +1,12 @@
+{
+    "workbench.colorTheme": "Default Dark+",
+    "window.titleBarStyle": "custom",
+    "workbench.colorCustomizations": {
+        "window.titleBarStyle": "custom",
+        "window.activeBorder": "#00ff4c",
+        "window.inactiveBorder": "#2d03eb",
+        "titleBar.activeBackground": "#52a51b",
+        "activityBar.background": "#52a51b7e",
+        "focusBorder": "#ff0000"
+    },
+}

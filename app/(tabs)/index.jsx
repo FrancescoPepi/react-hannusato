@@ -1,25 +1,29 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, Linking, View, ActivityIndicator, Button, TouchableOpacity, ScrollView } from 'react-native';
+import { StatusBar , Image, StyleSheet, Linking, View, ActivityIndicator, Button, Dimensions , PixelRatio, Text, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import {CustomFadeInUp, CustomFadeOutUp } from '@/animations/customAnimations';
 
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming
 } from 'react-native-reanimated';
-const HEADER_HEIGHT = 250;
 
 import { HelloWave } from '@/components/HelloWave';
 import SearchBarComponent from '@/components/SearchBar';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import AnimatedPhrase  from '@/components/AnimatedPhrase';
-import CardList  from '@/components/CardList';
-import FlashListCustom  from '@/components/FlashListCustom';
-import { SearchBar } from 'react-native-screens';
+import FlashListCustom2  from '@/components/FlashListCustom2';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 // import Animated, { useSharedValue, withSpring, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 // console.log("AnimatedPhrase:", AnimatedPhrase);
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const scale = SCREEN_WIDTH / 375;
+
+
+export function normalize(size) {
+  const newSize = size * scale;
+  return Math.round(PixelRatio.roundToNearestPixel(newSize));
+}
+
 export default function HomeScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [data, setData] = useState(null);
@@ -34,6 +38,7 @@ export default function HomeScreen() {
 
   const logoMap = {
     subito: require('@/assets/images/logo/subito.png'),
+    vinted: require('@/assets/images/logo/vinted.png'),
     ebay: require('@/assets/images/logo/ebay.png'),
     vestiaire: require('@/assets/images/logo/vestiaire.png'),
   };
@@ -41,12 +46,16 @@ export default function HomeScreen() {
   let test = 'red';
 
   const fetchData = async (term) => {
-    //  console.log("isLoading,loading",isLoading,loading)
+    const baseUrl = 'https://hannusato-express.onrender.com'
+    const baseUrlTest = Platform.OS === 'ios' 
+    ? 'http://192.168.1.60:5000'  // iOS usa 'localhost'
+      : 'http://10.0.2.2:5000';
+    
     if (!term) return; // Evita chiamate API se il termine è vuoto
     setLoading(true);
     try {
       setIsLoading(true);
-      const response = await fetch(`https://hannusato-express.onrender.com/crawl?term=${term}`);
+      const response = await fetch(`${baseUrlTest}/crawl?term=${term}`);
       const result = await response.json();
 
       // console.log("result",result);
@@ -95,27 +104,9 @@ export default function HomeScreen() {
     }
   };
 
-// ANIMAZIONE SPOSTA SEARCH BAR
-  // React.useEffect(() => {
-    // if (isLoading) {
-    //   searchBarPosition.value = withTiming(-HEADER_HEIGHT, { duration: 300 }); // Sposta in basso
-    //   console.log(searchBarPosition);
-    // }
-    // else {
-    //   searchBarPosition.value = withTiming(0, { duration: 300 }); // Rimane in alto
-    //   console.log(searchBarPosition);
-    //   // console.log(withTiming(HEADER_HEIGHT));
-    // }
-  // }, [isLoading]);
-
-  // const searchBarAnimatedStyle = useAnimatedStyle(() => {
-  //   return {
-  //     transform: [{ translateY: searchBarPosition.value }],
-  //   };
-  // });
-
   return (
     <>
+      {Platform.OS === 'ios' ? <StatusBar style="light" hidden={false} /> : <StatusBar style="light" hidden={true} />}
     <ParallaxScrollView
     headerBackgroundColor={{ light: '#56a06f', dark: '#56a06f' }}
       headerImage={
@@ -139,16 +130,17 @@ export default function HomeScreen() {
       
         {loading ? (
           <View style={styles.boxContainer}>
-            <ThemedView style={[styles.titleContainer]}>
-              <ThemedText type="title">Welcome Back</ThemedText>
-              <ThemedView style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                <ThemedText type="defaultSemiBold">Project Hannusato</ThemedText>
+             <ThemedView lightColor='#002f06' darkColor='#002f06' style={[styles.titleContainer]}>
+              <ThemedView lightColor='#002f06' darkColor='#002f06' style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <ThemedText type="title" style={{color:'#fff'}}>Welcome Back</ThemedText>
+                {/* <ThemedText type="defaultSemiBold">Project Hannusato</ThemedText> */}
                 <HelloWave />
               </ThemedView>
             </ThemedView>
-            <AnimatedPhrase />
+            <AnimatedPhrase /> 
+            
           </View>
-        
+          
         ) : (null)}
 
       </ParallaxScrollView>
@@ -156,20 +148,20 @@ export default function HomeScreen() {
       null
         
       ) : (
-          <ThemedView>                          
-            <ThemedView type="title" 
-              style={styles.stickyHeader}
-              lightColor="transparent" darkColor="transparent"
+          <Animated.View entering={CustomFadeInUp} exiting={CustomFadeOutUp}>                          
+            <View  className='top-5 left-0 z-10'
+              style={[styles.stickyHeader, {marginTop: normalize(Platform.OS === 'ios'? 45 : 35),right: normalize(Platform.OS === 'ios'?77:70) , paddingLeft: normalize(10)}]}
+              // lightColor="transparent" darkColor="transparent"
               >
               <SearchBarComponent
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 onSearch={fetchData}
-                />
-            </ThemedView>
-              <FlashListCustom data={data} logoMap={logoMap} searchQuery={searchQuery}  />
-              {/* <CardList data={data} logoMap={logoMap} /> */}
-          </ThemedView>
+              />
+            </View>
+              <FlashListCustom2 data={data} logoMap={logoMap} searchQuery={searchQuery}  />
+              {/* <FlashListCustom data={data} logoMap={logoMap} searchQuery={searchQuery}  /> */}
+          </Animated.View>
       )}
 </>
   );
@@ -187,14 +179,14 @@ const styles = StyleSheet.create({
     flex: 1,
     position: "absolute",
     // display: "fixed",
-    top: 10,
-    left: 0,
-    right: 0,
-    zIndex:10,
+    // top: 10,
+    // left: 0,
+    // right: 70,
+    // zIndex:10,
     // backgroundColor: "transparent",
     // backgroundColor: "#ffffff0",
-    paddingTop: 50,
-    paddingHorizontal: 20,
+    // paddingTop: 50,
+    // paddingHorizontal: 20,
     // height: 50,
 
     elevation: 5, // Effetto ombra su Android
