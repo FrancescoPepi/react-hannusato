@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Text, RefreshControl , Platform, StatusBar, Dimensions, ScrollView, StyleSheet, View, PixelRatio, Image, TouchableOpacity, useAnimatedValue , Linking, Switch  } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import FloatingActionButton from '@/components/FloatingActionButton';
+import DropdownFilter from '@/components/DropdownFilter';
 import { Ionicons } from '@expo/vector-icons';
 import CardCustom  from '@/components/CardCustom';
 import CardCustomV2  from '@/components/CardCustomV2';
@@ -125,7 +126,14 @@ const FlashListCustom = ({ data, logoMap, searchQuery, setSearchQuery, onSearch 
             />
           </View>
           <View>
-            <FloatingActionButton
+            {/* <FloatingActionButton
+              logoMap={logoMap} 
+              selectedSources={selectedSources} 
+              onFilterChange={setSelectedSources}
+              titleFilterActive={isTitleFilterActive}
+              onTitleFilterToggle={setIsTitleFilterActive}
+            /> */}
+            <DropdownFilter
               logoMap={logoMap} 
               selectedSources={selectedSources} 
               onFilterChange={setSelectedSources}
