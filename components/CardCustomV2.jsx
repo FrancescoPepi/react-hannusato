@@ -53,11 +53,15 @@ const CardCustom = ({ item, logoMap, index, getPriceColor }) => {
                     {/* PREZZO */}
                     <View className='h-10 items-start absolute bottom-0 right-0 z-10 border-4 border-bgCard rounded-xl bg-[#F6F5F5]' style={[{ backgroundColor: getPriceColor(item.price) }]}>
                         <Text className='p-0.5 pl-1 text-lg font-bold min-w-[80px] text-rose-100 rounded-xl'>
-                        💰€{item.price} {item.price.length > 12 ? '' : null}
+                        {/* €{item.price} {item.price.length > 12 ? '' : null} */}
+                        💰€{item.price} {item.price.length > 12 ? '+' : null}
                         </Text>
                     </View>
                     <View className='p-1 rounded-xl flex-1 h-full' style={{backgroundColor:'white'}}>
-                        <Text numberOfLines={2} ellipsizeMode="tail" className='text-black-100 p-2 text-lg font-bold'>
+                        {/* <Text numberOfLines={2} ellipsizeMode="tail" className='text-black-100 p-2 text-lg font-bold'>
+                            {item.title}
+                        </Text> */}
+                        <Text className='text-black-100 p-2 text-lg font-bold'>
                             {item.title}
                         </Text>
                     </View>

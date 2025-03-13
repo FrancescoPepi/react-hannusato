@@ -93,7 +93,8 @@ const DropdownFilter: React.FC<DropdownFilterProps> = ({
               color="#494949" 
               style={{ marginRight: 5 }}
             />
-            <Text style={styles.filterText}>X TITOLO</Text>
+            <Text style={styles.filterText}>FILTRA PER TITOLO</Text>
+            {/* <Text style={styles.filterText}>CONTENUTO NEL TITOLO</Text> */}
           </TouchableOpacity>
         </View>
       )}

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StatusBar , Image, StyleSheet, Linking, View, ActivityIndicator, Button, Dimensions , PixelRatio, Text, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {CustomFadeInUp, CustomFadeOutUp } from '@/animations/customAnimations';
-
+import { useRouter } from 'expo-router';
 import Animated, {
 } from 'react-native-reanimated';
 
@@ -29,7 +29,13 @@ export default function HomeScreen() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
+  const handleSearchFromHome = (term) => {
+    if (!term) return;
+    setSearchQuery('');
+    router.push({ pathname: '/search', params: { initialQuery: term } });
+  };
   // const searchBarPosition = useSharedValue(0);
 
   const handlePress = () => {
@@ -40,17 +46,21 @@ export default function HomeScreen() {
     subito: require('@/assets/images/logo/subito.png'),
     vinted: require('@/assets/images/logo/vinted.png'),
     ebay: require('@/assets/images/logo/ebay.png'),
-    vestiaire: require('@/assets/images/logo/vestiaire.png'),
+    wallapop: require('@/assets/images/logo/wallapop.png'),
+    // vestiaire: require('@/assets/images/logo/vestiaire.png'),
   };
 
   let test = 'red';
 
   const fetchData = async (term) => {
     const baseUrl = 'https://hannusato-express.onrender.com'
-    const baseUrlTest = Platform.OS === 'ios' 
-    ? 'http://192.168.1.60:5000'  // iOS usa 'localhost'
-      : 'http://10.0.2.2:5000';
-      // : 'http://192.168.1.60:5000';
+    // const baseUrlTest = Platform.OS === 'ios' 
+    // ? 'http://192.168.1.60:5000'  // iOS usa 'localhost'
+    //   : 'http://10.0.2.2:5000';
+    //   // : 'http://192.168.1.60:5000';
+    // const baseUrlTest ='https://104.248.20.26:5000'
+    // const baseUrlTest ='https://hannusato-backend.duckdns.org:5000' //old
+    const baseUrlTest ='https://hannusato-backendv2.ddns.net:5000'
     
     if (!term) return; // Evita chiamate API se il termine è vuoto
     setLoading(true);
@@ -95,7 +105,7 @@ export default function HomeScreen() {
       // 🔥 Ordina i dati in base al prezzo
       const sortedUpdatedData = updatedData.sort((a, b) => a.price - b.price);
       // console.log("sortedData", sortedUpdatedData);
-      setData(sortedUpdatedData);
+      setData(updatedData);
     } catch (error) {
       console.error('Errore nella chiamata API:', error);
       setData([]); // Pulisce la lista in caso di errore
@@ -104,6 +114,7 @@ export default function HomeScreen() {
       setIsLoading(false);
     }
   };
+
 
   return (
     <>
@@ -120,7 +131,8 @@ export default function HomeScreen() {
         <SearchBarComponent
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
-          onSearch={fetchData}
+          // onSearch={fetchData}
+          onSearch={handleSearchFromHome}
         />
       }
         isLoading={isLoading}
@@ -131,35 +143,86 @@ export default function HomeScreen() {
       
         {loading ? (
           <View style={styles.boxContainer}>
-             <ThemedView lightColor='#002f06' darkColor='#002f06' style={[styles.titleContainer]}>
-              <ThemedView lightColor='#002f06' darkColor='#002f06' style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <ThemedText type="title" style={{color:'#fff'}}>Welcome Back</ThemedText>
+             {/* <ThemedView lightColor='#002f06' darkColor='#002f06' style={[styles.titleContainer]}> */}
+              {/* <ThemedView lightColor='#002f06' darkColor='#002f06' style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}> */}
+              {/* <ThemedText type="title" style={{color:'#fff'}}>Welcome Back</ThemedText> */}
                 {/* <ThemedText type="defaultSemiBold">Project Hannusato</ThemedText> */}
-                <HelloWave />
-              </ThemedView>
-            </ThemedView>
+                {/* <HelloWave /> */}
+              {/* </ThemedView> */}
+            {/* </ThemedView> */}
             <AnimatedPhrase /> 
-            
+
+            {Object.keys(logoMap).map((source) => {
+              // const isActive = selectedSources.includes(source.toLowerCase());
+              return (
+                // <TouchableOpacity
+                //   key={source}
+                //   style={[styles.filterOption, isActive && styles.activeFilterOption]}
+                //   onPress={() => toggleFilter(source)}
+                // >
+                // </TouchableOpacity>
+                <View style={styles.textContainer}>
+                  <Image 
+                    source={logoMap[source.toLowerCase()]} 
+                    resizeMode="contain" 
+                    style={styles.filterIcon} 
+                  />
+                  <View style={{justifyContent:'space-between'}} className='flex flex-row w-full'>
+                    <Text style={styles.filterText}>
+                      Facilità d’uso
+                    </Text>
+                    <Text style={styles.filterText}>
+                      ⭐⭐⭐⭐⭐
+                    </Text>
+                  </View>
+                  <View style={{justifyContent:'space-between'}} className='flex flex-row w-full'>
+                    <Text style={styles.filterText}>
+                      Numero visite mensili
+                    </Text>
+                    <Text style={styles.filterText}>
+                      ⭐⭐⭐⭐⭐
+                    </Text>
+                  </View>
+                  <View style={{justifyContent:'space-between'}} className='flex flex-row w-full'>
+                    <Text style={styles.filterText}>
+                      Sicurezza
+                    </Text>
+                    <Text style={styles.filterText}>
+                      ⭐⭐⭐⭐⭐
+                    </Text>
+                  </View>
+                  <View style={{justifyContent:'space-between'}} className='flex flex-row w-full'>
+                    <Text style={styles.filterText}>
+                      Servizio clienti
+                    </Text>
+                    <Text style={styles.filterText}>
+                      ⭐⭐⭐⭐⭐
+                    </Text>
+                  </View>
+                  {/* <Text style={{color:'#fff'}}>Loading...</Text> */}
+                </View>
+              );
+            })}
           </View>
           
         ) : (null)}
 
       </ParallaxScrollView>
-      {loading ? (
-      null
+      {/* {loading ? ( */}
+      {/* null */}
         
-      ) : (
-          <Animated.View entering={CustomFadeInUp} exiting={CustomFadeOutUp}>
-            <FlashListCustom2
+      {/* ) : ( */}
+          {/* <Animated.View entering={CustomFadeInUp} exiting={CustomFadeOutUp}> */}
+            {/* <FlashListCustom2
               data={data}
               logoMap={logoMap}
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               onSearch={fetchData}
-            />
+            /> */}
               {/* <FlashListCustom data={data} logoMap={logoMap} searchQuery={searchQuery}  /> */}
-          </Animated.View>
-      )}
+          {/* </Animated.View> */}
+      {/* )} */}
 </>
   );
 }
@@ -170,6 +233,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
+  },
+  filterOption: {
+    flexDirection: 'row',
+      alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   stickyHeader: { // 🔥 Stile per mantenere il componente sticky
     display: 'flex',
@@ -192,6 +262,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
+
+  filterIcon: {
+    // width: 100,
+    height: '20%',
+    // marginRight: 5,
+    marginBottom: 10,
+  },
+  filterText: {
+    fontSize: 16,
+    color: '#ffffff',
+    },
   textContainer: {
     backgroundColor: '#56a06f5f',
     textAlign: 'center',
@@ -199,14 +280,17 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 5,
     padding: 10,
     borderRadius: 10,
+    width: '80%',
+    height: 200,
+    
   },
   boxContainer: {
-    padding: "15",
-    backgroundColor: '#',
-    borderRadius: 20,
+    // padding: "10",
+    // backgroundColor: '#',
+    // borderRadius: 20,
     gap: 8,
   },
   reactLogo: {
