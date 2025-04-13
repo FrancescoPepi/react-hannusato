@@ -1,56 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams } from 'expo-router';
-import FlashListCustom2 from '@/components/FlashListCustom2';
-import Animated, {} from 'react-native-reanimated';
-import {CustomFadeInUp, CustomFadeOutUp } from '@/animations/customAnimations';
+import React, { useEffect, useRef } from "react";
+import { useLocalSearchParams } from "expo-router";
+import FlashListCustom2 from "@/components/FlashListCustom2";
+import Animated from "react-native-reanimated";
+import { CustomFadeInUp, CustomFadeOutUp } from "@/animations/customAnimations";
+import { useAppContext } from "@/context/AppContext";
 
 export default function Search() {
-  const { initialQuery } = useLocalSearchParams();
-  const [searchQuery, setSearchQuery] = useState(initialQuery || '');
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+	const { initialQuery } = useLocalSearchParams();
+	const { searchQuery, setSearchQuery, fetchData, filteredData, isLoading } = useAppContext();
 
-  useEffect(() => {
-    if (initialQuery) {
-      setSearchQuery(initialQuery);
-      fetchData(initialQuery);
-    }
-  }, [initialQuery]);
+	// Use a ref to track if this is the first render
+	const initialRenderRef = useRef(true);
 
-  const fetchData = async (term) => {
-    if (!term) return;
-    setIsLoading(true);
-    try {
-      const response = await fetch(`https://hannusato-backendv2.ddns.net:5000/crawl?term=${term}`);
-      const result = await response.json();
-      setData(result);
-    } catch (error) {
-      console.error(error);
-      setData([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+	useEffect(() => {
+		// Process initialQuery whenever it changes
+		if (initialQuery) {
+			// console.log('Search screen - useEffect - initialQuery:', initialQuery);
+			// console.log('Search screen - useEffect - current searchQuery:', searchQuery);
+			setSearchQuery(initialQuery);
+			fetchData(initialQuery);
+			// console.log('Search screen - useEffect - after setSearchQuery called');
+		}
+	}, [initialQuery]); // Dependency on initialQuery ensures it runs whenever initialQuery changes
 
-  return (
-    <Animated.View entering={CustomFadeInUp} exiting={CustomFadeOutUp}>
-      <FlashListCustom2
-        data={data}
-        const logoMap = {{
-          subito: require('@/assets/images/logo/subito.png'),
-          vinted: require('@/assets/images/logo/vinted.png'),
-          ebay: require('@/assets/images/logo/ebay.png'),
-          wallapop: require('@/assets/images/logo/wallapop.png'),
-          // vestiaire: require('@/assets/images/logo/vestiaire.png'),
-        }}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSearch={(query) => {
-          setSearchQuery(query);
-          fetchData(query);
-        }}
-        isLoading={isLoading}
-      />
-    </Animated.View>
-  );
+	return (
+		<Animated.View
+			entering={CustomFadeInUp}
+			exiting={CustomFadeOutUp}
+		>
+			<FlashListCustom2
+				data={filteredData}
+				logoMap={{
+					subito: require("@/assets/images/logo/subito.png"),
+					vinted: require("@/assets/images/logo/vinted.png"),
+					ebay: require("@/assets/images/logo/ebay.png"),
+					wallapop: require("@/assets/images/logo/wallapop.png"),
+				}}
+				searchQuery={searchQuery}
+				setSearchQuery={setSearchQuery}
+				onSearch={(query) => {
+					// console.log('Search screen - onSearch - query:', query);
+					// console.log('Search screen - onSearch - current searchQuery:', searchQuery);
+					setSearchQuery(query);
+					fetchData(query);
+					// console.log('Search screen - onSearch - after setSearchQuery and fetchData called');
+				}}
+				isLoading={isLoading}
+			/>
+		</Animated.View>
+	);
 }

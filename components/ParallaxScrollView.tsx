@@ -1,146 +1,163 @@
-import React from 'react';
-import type { PropsWithChildren, ReactElement } from 'react';
-import { StyleSheet } from 'react-native';
+import React from "react";
+import type { PropsWithChildren, ReactElement } from "react";
+import { StyleSheet } from "react-native";
 import Animated, {
-  interpolate,
-  useAnimatedRef,
-  useAnimatedStyle,
-  useScrollViewOffset,
-  useSharedValue,
-  withTiming
-} from 'react-native-reanimated';
+	interpolate,
+	useAnimatedRef,
+	useAnimatedStyle,
+	useScrollViewOffset,
+	useSharedValue,
+	withTiming,
+} from "react-native-reanimated";
 
-import { ThemedView } from '@/components/ThemedView';
-import { useBottomTabOverflow } from '@/components/ui/TabBarBackground';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from "@/components/ThemedView";
+import { useBottomTabOverflow } from "@/components/ui/TabBarBackground";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { ThemedText } from "@/components/ThemedText";
 
 const HEADER_HEIGHT = 250;
 
 type Props = PropsWithChildren<{
-  headerImage: ReactElement;
-  headerBackgroundColor: { dark: string; light: string };
-  isLoading: boolean;
-  loading: boolean;
+	headerImage: ReactElement;
+	headerBackgroundColor: { dark: string; light: string };
+	isLoading: boolean;
+	loading: boolean;
 }>;
 
 export default function ParallaxScrollView({
-  children,
-  headerImage,
-  headerBackgroundColor,
-  stickyHeader,
-  isLoading,
-  loading,
+	children,
+	headerImage,
+	headerBackgroundColor,
+	stickyHeader,
+	isLoading,
+	loading,
 }: Props & { stickyHeader?: ReactElement }) {
-  const colorScheme = useColorScheme() ?? 'light';
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollOffset = useScrollViewOffset(scrollRef);
-  const bottom = useBottomTabOverflow();
-  // const searchBarPosition = useSharedValue(0);
-  const headerAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
-            [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
-          ),
-        },
-        {
-          scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
-        },
-      ],
-    };
-  });
-  // Funzione per aggiornare la posizione quando cambia loading/isLoading
-// React.useEffect(() => {
-//   if (!isLoading) {
-//     searchBarPosition.value = withTiming(0, { duration: 300 }); // Sposta in basso
-//     // console.log(searchBarPosition);
-//   } else if (!isLoading && loading ) {
-//     searchBarPosition.value = withTiming(- HEADER_HEIGHT, { duration: 300 }); // Sposta in basso
-//     // console.log(searchBarPosition);
-//   } else {
-//     searchBarPosition.value = withTiming(0, { duration: 300 }); // Rimane in alto
-//     console.log(searchBarPosition);
-//     // console.log(withTiming(HEADER_HEIGHT));
-//   }
-// }, [isLoading,loading]);
+	const colorScheme = useColorScheme() ?? "light";
+	const scrollRef = useAnimatedRef<Animated.ScrollView>();
+	const scrollOffset = useScrollViewOffset(scrollRef);
+	const bottom = useBottomTabOverflow();
+	// const searchBarPosition = useSharedValue(0);
+	const headerAnimatedStyle = useAnimatedStyle(() => {
+		return {
+			transform: [
+				{
+					translateY: interpolate(
+						scrollOffset.value,
+						[-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+						[-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
+					),
+				},
+				{
+					scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
+				},
+			],
+		};
+	});
+	// Funzione per aggiornare la posizione quando cambia loading/isLoading
+	// React.useEffect(() => {
+	//   if (!isLoading) {
+	//     searchBarPosition.value = withTiming(0, { duration: 300 }); // Sposta in basso
+	//     // console.log(searchBarPosition);
+	//   } else if (!isLoading && loading ) {
+	//     searchBarPosition.value = withTiming(- HEADER_HEIGHT, { duration: 300 }); // Sposta in basso
+	//     // console.log(searchBarPosition);
+	//   } else {
+	//     searchBarPosition.value = withTiming(0, { duration: 300 }); // Rimane in alto
+	//     console.log(searchBarPosition);
+	//     // console.log(withTiming(HEADER_HEIGHT));
+	//   }
+	// }, [isLoading,loading]);
 
-// const searchBarAnimatedStyle = useAnimatedStyle(() => {
-//   return {
-//     transform: [{ translateY: searchBarPosition.value }],
-//   };
-// });
+	// const searchBarAnimatedStyle = useAnimatedStyle(() => {
+	//   return {
+	//     transform: [{ translateY: searchBarPosition.value }],
+	//   };
+	// });
 
-  return (
-    <ThemedView lightColor='#002f06' darkColor='#002f06' style={styles.container}>
-      <Animated.ScrollView
-        ref={scrollRef}
-        scrollEventThrottle={16}
-        scrollIndicatorInsets={{ bottom }}
-        contentContainerStyle={{ paddingBottom: bottom }}
-        // stickyHeaderIndices={stickyHeader ? [1] : undefined} // 🔥 Rende sticky l'header di ricerca
-      >
-        <Animated.View
-          style={[
-            styles.header,
-            { backgroundColor: headerBackgroundColor[colorScheme] },
-            headerAnimatedStyle,
-          ]}>
-          {headerImage}
-          <ThemedText style={styles.textContainer} type="subtitle">Loro l'hanno usato, noi annusiamo l'affare</ThemedText>
-        </Animated.View>
-        
-        {stickyHeader && loading && <ThemedView style={styles.stickyHeader} lightColor="transparent" darkColor="transparent">
-            {stickyHeader}
-        </ThemedView>}
+	return (
+		<ThemedView
+			lightColor="#002f06"
+			darkColor="#002f06"
+			style={styles.container}
+		>
+			<Animated.ScrollView
+				ref={scrollRef}
+				scrollEventThrottle={16}
+				scrollIndicatorInsets={{ bottom }}
+				contentContainerStyle={{ paddingBottom: bottom }}
+				// stickyHeaderIndices={stickyHeader ? [1] : undefined} // 🔥 Rende sticky l'header di ricerca
+			>
+				<Animated.View style={[styles.header, { backgroundColor: headerBackgroundColor[colorScheme] }, headerAnimatedStyle]}>
+					{headerImage}
+					<ThemedText
+						style={styles.textContainer}
+						type="subtitle"
+					>
+						Loro l'hanno usato, noi annusiamo l'affare
+					</ThemedText>
+				</Animated.View>
 
-          {/* {stickyHeader && (
+				{stickyHeader && (
+					<ThemedView
+						style={styles.stickyHeader}
+						lightColor="transparent"
+						darkColor="transparent"
+					>
+						{stickyHeader}
+					</ThemedView>
+				)}
+
+				{/* {stickyHeader && (
             <Animated.View style={[styles.stickyHeader, searchBarAnimatedStyle]}>
               {stickyHeader}
             </Animated.View> */}
-          {/* )} */}
-        <ThemedView lightColor='transparent' darkColor='transparent' style={styles.content}>{children}</ThemedView>
-      </Animated.ScrollView>
-    </ThemedView>
-  );
+				{/* )} */}
+				<ThemedView
+					lightColor="transparent"
+					darkColor="transparent"
+					style={styles.content}
+				>
+					{children}
+				</ThemedView>
+			</Animated.ScrollView>
+		</ThemedView>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: HEADER_HEIGHT,
-    overflow: 'hidden',
-    // backgroundColor: '#005c71',
-  },
-  content: {
-    flex: 1,
-    padding: 32,
-    gap: 16,
-    overflow: 'hidden',
-  },
-  stickyHeader: { // 🔥 Stile per mantenere il componente sticky
-    backgroundColor: "#ffffff0",
-    paddingTop: 50,
-    paddingHorizontal: 20,
-    zIndex: 10,
+	container: {
+		flex: 1,
+	},
+	header: {
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		height: HEADER_HEIGHT,
+		overflow: "hidden",
+		// backgroundColor: '#005c71',
+	},
+	content: {
+		flex: 1,
+		padding: 32,
+		gap: 16,
+		overflow: "hidden",
+	},
+	stickyHeader: {
+		// 🔥 Stile per mantenere il componente sticky
+		backgroundColor: "#ffffff0",
+		paddingTop: 50,
+		paddingHorizontal: 20,
+		zIndex: 10,
 
-    elevation: 5, // Effetto ombra su Android
-    shadowColor: "#000", // Effetto ombra su iOS
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  textContainer: {
-    transform: [{ translateY: -30 }],
-    textAlign: 'center',
-    color:'#fff'
-  },
+		elevation: 5, // Effetto ombra su Android
+		shadowColor: "#000", // Effetto ombra su iOS
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.2,
+		shadowRadius: 4,
+	},
+	textContainer: {
+		transform: [{ translateY: -30 }],
+		textAlign: "center",
+		color: "#fff",
+	},
 });

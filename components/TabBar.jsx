@@ -45,9 +45,9 @@
 //         : options.title !== undefined
 //         ? options.title
 //         : route.name;
-        
+
 //         const isFocused = state.index === index;
-        
+
 //         const onPress = () => {
 //           tabPositionX.value = withSpring(buttonWidth * index, { duration: 1500 });
 //           const event = navigation.emit({
@@ -101,107 +101,132 @@
 //   );
 // }
 
-
-
-
-import { View, StyleSheet } from 'react-native';
-import { useTheme } from '@react-navigation/native';
-import TabBarButton from '@/components/TabBarButton';
-import React, { useState } from 'react';
+import { View, StyleSheet } from "react-native";
+import { useTheme } from "@react-navigation/native";
+import TabBarButton from "@/components/TabBarButton";
+import React, { useState } from "react";
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 
 const MyTabBar = ({ state, descriptors, navigation }) => {
-  const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
-  const buttonWidth = dimensions.width / state.routes.length;
+	const [dimensions, setDimensions] = useState({ height: 20, width: 100 });
+	const buttonWidth = dimensions.width / state.routes.length;
 
-  const onTabBarLayout = (e) => {
-    setDimensions({
-      height: e.nativeEvent.layout.height,
-      width: e.nativeEvent.layout.width,
-    });
-  };
+	const onTabBarLayout = (e) => {
+		setDimensions({
+			height: e.nativeEvent.layout.height,
+			width: e.nativeEvent.layout.width,
+		});
+	};
 
-  const tabPositionX = useSharedValue(buttonWidth * state.index);
+	const tabPositionX = useSharedValue(buttonWidth * state.index);
 
-  React.useEffect(() => {
-    tabPositionX.value = withSpring(buttonWidth * state.index, { duration: 1200 });
-  }, [state.index]);
+	React.useEffect(() => {
+		tabPositionX.value = withSpring(buttonWidth * state.index, { duration: 1200 });
+	}, [state.index]);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: tabPositionX.value }],
-  }));
+	const animatedStyle = useAnimatedStyle(() => ({
+		transform: [{ translateX: tabPositionX.value }],
+	}));
 
-  const { colors } = useTheme();
+	// Shared values per i margini del container
+	const marginLeft = useSharedValue(state.index === 1 ? 10 : 50);
+	const marginRight = useSharedValue(state.index === 1 ? 80 : 50);
 
-  return (
-    <View onLayout={onTabBarLayout} style={styles.tabbar}>
-      <Animated.View style={[{
-        position: 'absolute',
-        backgroundColor: '#56a06f',
-        borderRadius: 30,
-        marginHorizontal: 12,
-        height: dimensions.height - 15,
-        width: buttonWidth - 25,
-      }, animatedStyle]} />
+	React.useEffect(() => {
+		if (state.index === 1) {
+			marginLeft.value = withSpring(10, { damping: 15, stiffness: 120 });
+			marginRight.value = withSpring(90, { damping: 15, stiffness: 120 });
+		} else {
+			marginLeft.value = withSpring(50, { damping: 15, stiffness: 120 });
+			marginRight.value = withSpring(50, { damping: 15, stiffness: 120 });
+		}
+	}, [state.index]);
 
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const label =
-          options.tabBarLabel ?? options.title ?? route.name;
+	const animatedContainerStyle = useAnimatedStyle(() => ({
+		marginLeft: marginLeft.value,
+		marginRight: marginRight.value,
+	}));
 
-        const isFocused = state.index === index;
+	const { colors } = useTheme();
 
-        const onPress = () => {
-          const event = navigation.emit({
-            type: 'tabPress',
-            target: route.key,
-            canPreventDefault: true,
-          });
+	return (
+		<Animated.View
+			onLayout={onTabBarLayout}
+			style={[styles.tabbar, animatedContainerStyle]}
+		>
+			<Animated.View
+				style={[
+					{
+						position: "absolute",
+						backgroundColor: "#56a06f",
+						borderRadius: 30,
+						marginHorizontal: 12,
+						height: dimensions.height - 15,
+						width: buttonWidth - 25,
+					},
+					animatedStyle,
+				]}
+			/>
 
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name, route.params);
-          }
-        };
+			{state.routes.map((route, index) => {
+				const { options } = descriptors[route.key];
+				const label = options.tabBarLabel ?? options.title ?? route.name;
 
-        return (
-          <TabBarButton
-            key={route.name}
-            onPress={onPress}
-            isFocused={isFocused}
-            routeName={route.name}
-            color={isFocused ? '#fff' : colors.text}
-            label={label}
-          />
-        );
-      })}
-    </View>
-  );
+				const isFocused = state.index === index;
+
+				const onPress = () => {
+					const event = navigation.emit({
+						type: "tabPress",
+						target: route.key,
+						canPreventDefault: true,
+					});
+
+					if (!isFocused && !event.defaultPrevented) {
+						navigation.navigate(route.name, route.params);
+					}
+				};
+
+				return (
+					<TabBarButton
+						key={route.name}
+						onPress={onPress}
+						isFocused={isFocused}
+						routeName={route.name}
+						color={isFocused ? "#fff" : colors.text}
+						label={label}
+					/>
+				);
+			})}
+		</Animated.View>
+	);
 };
 
 const styles = StyleSheet.create({
-  tabbar: {
-    position: 'absolute',
-    bottom: 30,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginHorizontal: 100,
-    paddingVertical: 8,
-    borderRadius: 35,
-    backgroundColor: 'white',
+	tabbar: {
+		position: "absolute",
+		bottom: 30,
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		// marginRight: 80,
+		// marginLeft: 10,
+		// marginHorizontal: 50,
+		paddingVertical: 8,
+		borderRadius: 35,
+		backgroundColor: "white",
 
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 2,
-  },
-  // tabBarItem: {
-  //   flex: 1,
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  //   gap: 3,
-  // },
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 10 },
+		shadowOpacity: 0.1,
+		shadowRadius: 10,
+		elevation: 2,
+	},
+	// tabBarItem: {
+	//   flex: 1,
+	//   alignItems: 'center',
+	//   justifyContent: 'center',
+	//   gap: 3,
+	// },
 });
 
 export default MyTabBar;

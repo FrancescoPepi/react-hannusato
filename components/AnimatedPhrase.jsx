@@ -1,5 +1,5 @@
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { View } from 'react-native';
 
 const phrases = [
@@ -11,7 +11,7 @@ const phrases = [
     "Hannusato ti aiuta a trovare il miglior prezzo in pochi secondi!"
   ];
 
-const AnimatedPhrase = () => {
+const AnimatedPhrase = memo(() => {
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
   const opacity = useSharedValue(1);
   const translateY = useSharedValue(0);
@@ -30,7 +30,7 @@ const AnimatedPhrase = () => {
         opacity.value = withTiming(1, { duration: 500 });
         translateY.value = withTiming(0, { duration: 500 });
       }, 500);
-    }, 5000); // Cambia frase ogni 30 secondi
+    }, 5000); // Cambia frase ogni 5 secondi
 
     return () => clearInterval(interval);
   }, []);
@@ -42,11 +42,15 @@ const AnimatedPhrase = () => {
 
   return (
     <View style={{ alignItems: 'center', justifyContent: 'center', height: 80 }}>
-      <Animated.Text style={[animatedStyle, { fontSize: 16, textAlign: 'center', color: "#ffffff" }]}>
+      <Animated.Text 
+        style={[animatedStyle, { fontSize: 16, textAlign: 'center', color: "#ffffff" }]}
+        accessibilityRole="text"
+        accessibilityLabel={`Suggerimento: ${phrases[currentPhraseIndex]}`}
+      >
         {phrases[currentPhraseIndex]}
       </Animated.Text>
     </View>
   );
-};
+});
 
 export default AnimatedPhrase;
